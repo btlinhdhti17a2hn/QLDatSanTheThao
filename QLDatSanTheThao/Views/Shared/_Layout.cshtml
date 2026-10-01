@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -13,7 +15,8 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">QLDatSanTheThao</a>
+                <!-- Đổi sang màu light blue (primary) -->
+                <a class="navbar-brand fw-bold text-primary" asp-area="" asp-controller="Home" asp-action="Index">🏟️ SPORTS GROUND</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -21,11 +24,59 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Trang chủ</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="SanTheThao" asp-action="Index">Danh sách sân</a>
                         </li>
+
+                        @{
+                            var vaiTroMenu = HttpContextAccessor.HttpContext?.Session?.GetString("VaiTro");
+                        }
+                        @if (vaiTroMenu == "Admin")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-primary fw-bold" asp-controller="LoaiSan" asp-action="Index">Quản lý loại sân</a>
+                            </li>
+                        }
+
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Giới thiệu</a>
+                        </li>
+                    </ul>
+
+                    <!-- CỤM MENU BÊN PHẢI: HIỂN THỊ TRẠNG THÁI ĐĂNG NHẬP -->
+                    <ul class="navbar-nav">
+                        @{
+                            var tenNguoiDung = HttpContextAccessor.HttpContext?.Session?.GetString("HoTen");
+                            var vaiTro = HttpContextAccessor.HttpContext?.Session?.GetString("VaiTro");
+                        }
+
+                        @if (string.IsNullOrEmpty(tenNguoiDung))
+                        {
+                            // Chưa đăng nhập
+                            <li class="nav-item">
+                                <a class="nav-link text-primary fw-bold" asp-controller="TaiKhoan" asp-action="DangNhap">Đăng nhập</a>
+                            </li>
+                        }
+                        else
+                        {
+                            // Đã đăng nhập
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-primary fw-bold" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Xin chào: @tenNguoiDung (@vaiTro)
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item" href="#">Thông tin cá nhân</a></li>
+                                    @if (vaiTro == "Admin" || vaiTro == "NhanVien")
+                                    {
+                                        <li><a class="dropdown-item" href="#">Trang quản trị (Dashboard)</a></li>
+                                    }
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" asp-controller="TaiKhoan" asp-action="DangXuat">Đăng xuất</a></li>
+                                </ul>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>

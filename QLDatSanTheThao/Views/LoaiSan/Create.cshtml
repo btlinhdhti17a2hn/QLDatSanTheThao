@@ -1,0 +1,48 @@
+﻿@model QLDatSanTheThao.Models.Entities.LoaiSan
+@{
+    ViewData["Title"] = "Thêm loại sân";
+}
+
+<div class="container mt-4" style="max-width: 600px;">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-success text-white fw-bold">THÊM MỚI LOẠI SÂN</div>
+        <div class="card-body">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="TenLoai" class="form-label fw-bold">Tên loại sân <span class="text-danger">*</span></label>
+                    <input asp-for="TenLoai" class="form-control" placeholder="Nhập tên loại sân..." required />
+                    <span asp-validation-for="TenLoai" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="MoTa" class="form-label fw-bold">Mô tả</label>
+                    <textarea asp-for="MoTa" class="form-control" rows="3" placeholder="Mô tả chi tiết..."></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="SoNguoiToiDa" class="form-label fw-bold">Số người tối đa</label>
+                    <input asp-for="SoNguoiToiDa" class="form-control" type="number" value="10" />
+                    <span asp-validation-for="SoNguoiToiDa" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="DonGiaTheoGio" class="form-label fw-bold">Đơn giá theo giờ (VNĐ)</label>
+                    <input asp-for="DonGiaTheoGio" class="form-control" type="number" value="100000" />
+                    <span asp-validation-for="DonGiaTheoGio" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3 form-check">
+                    <input class="form-check-input" asp-for="TrangThai" checked />
+                    <label class="form-check-label fw-bold" asp-for="TrangThai">Đang hoạt động</label>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+                    <button type="submit" class="btn btn-success fw-bold">Lưu lại</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

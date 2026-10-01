@@ -1,7 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿// Họ và tên: [Điền tên SV 1]
+// Mã sinh viên: [Điền mã SV 1]
+// Nội dung thực hiện: Entity TaiKhoan - Đăng nhập và phân quyền
+
+
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace QLDatSanTheThao.Models.Entities
 {
+    [Table("TaiKhoan")]
     public class TaiKhoan
     {
         [Key]
@@ -9,33 +16,26 @@ namespace QLDatSanTheThao.Models.Entities
 
         [Required(ErrorMessage = "Tên đăng nhập không được để trống")]
         [StringLength(50)]
-        [Display(Name = "Tên đăng nhập")]
-        public string TenDangNhap { get; set; }
+        public string TenDangNhap { get; set; } = null!;
 
         [Required(ErrorMessage = "Mật khẩu không được để trống")]
-        [StringLength(100)]
-        [Display(Name = "Mật khẩu")]
-        public string MatKhau { get; set; }
+        [StringLength(255)]
+        public string MatKhau { get; set; } = null!;
 
         [Required(ErrorMessage = "Họ tên không được để trống")]
         [StringLength(100)]
-        [Display(Name = "Họ và tên")]
-        public string HoTen { get; set; }
+        public string HoTen { get; set; } = null!;
 
-        [Required]
+        [Required(ErrorMessage = "Email không được để trống")]
         [EmailAddress(ErrorMessage = "Email không đúng định dạng")]
-        [Display(Name = "Email")]
-        public string Email { get; set; }
+        public string Email { get; set; } = null!;
 
         [Required]
-        [Display(Name = "Vai trò")]
-        public string VaiTro { get; set; } // "Admin", "NhanVien", "KhachHang"
+        [StringLength(20)]
+        public string VaiTro { get; set; } = "KhachHang"; // Admin, NhanVien, KhachHang
 
-        [Display(Name = "Trạng thái")]
         public bool TrangThai { get; set; } = true;
 
-        // Navigation
-        public KhachHang KhachHang { get; set; }
+        public virtual KhachHang? KhachHang { get; set; }
     }
 }
-

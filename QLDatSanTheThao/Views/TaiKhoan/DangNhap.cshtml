@@ -1,0 +1,42 @@
+﻿@*
+// Họ và tên: [Điền tên SV 1]
+// Mã sinh viên: [Điền mã SV 1]
+// Nội dung thực hiện: Giao diện Razor View Đăng nhập
+*@
+
+@{
+    ViewData["Title"] = "Đăng nhập hệ thống";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card shadow-sm border-0 rounded-lg">
+            <div class="card-header bg-success text-white text-center py-3">
+                <h4 class="mb-0 fw-bold">HỆ THỐNG ĐẶT SÂN</h4>
+            </div>
+            <div class="card-body p-4">
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger text-center">
+                        @ViewBag.Error
+                    </div>
+                }
+
+                <form asp-controller="TaiKhoan" asp-action="DangNhap" method="post">
+                    <div class="form-group mb-3">
+                        <label class="fw-bold mb-1">Tên đăng nhập <span class="text-danger">*</span></label>
+                        <input type="text" name="tenDangNhap" class="form-control p-2" required placeholder="Nhập tên đăng nhập..." />
+                    </div>
+                    <div class="form-group mb-4">
+                        <label class="fw-bold mb-1">Mật khẩu <span class="text-danger">*</span></label>
+                        <input type="password" name="matKhau" class="form-control p-2" required placeholder="Nhập mật khẩu..." />
+                    </div>
+                    <button type="submit" class="btn btn-success w-100 py-2 fw-bold text-uppercase">Đăng Nhập</button>
+                </form>
+            </div>
+            <div class="card-footer text-center py-3 bg-light">
+                <small>Chưa có tài khoản? <a asp-controller="TaiKhoan" asp-action="DangKy" class="text-success text-decoration-none fw-bold">Đăng ký ngay</a></small>
+            </div>
+        </div>
+    </div>
+</div>

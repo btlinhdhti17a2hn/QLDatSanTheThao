@@ -1,57 +1,51 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿// Họ và tên: [Điền tên SV 3]
+// Mã sinh viên: [Điền mã SV 3]
+// Nội dung thực hiện: Entity KhachHang - Quản lý khách hàng
+
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace QLDatSanTheThao.Models.Entities
 {
+    [Table("KhachHang")]
     public class KhachHang
     {
         [Key]
         public int MaKhachHang { get; set; }
 
-        [Required]
-        [Display(Name = "Tài khoản")]
-        public int MaTaiKhoan { get; set; }
-
+        public int? MaTaiKhoan { get; set; }
         [ForeignKey("MaTaiKhoan")]
-        public TaiKhoan TaiKhoan { get; set; }
+        public virtual TaiKhoan? TaiKhoan { get; set; }
 
-        [Required, StringLength(100)]
-        [Display(Name = "Họ và tên")]
-        public string HoTen { get; set; }
+        [Required(ErrorMessage = "Họ tên bắt buộc nhập")]
+        [StringLength(100)]
+        public string HoTen { get; set; } = null!;
 
-        [Display(Name = "Ngày sinh")]
+        [DataType(DataType.Date)]
         public DateTime? NgaySinh { get; set; }
 
-        [StringLength(10)]
-        [Display(Name = "Giới tính")]
-        public string GioiTinh { get; set; }
+        public string? GioiTinh { get; set; }
 
-        [Required, Phone]
-        [Display(Name = "Số điện thoại")]
-        public string SoDienThoai { get; set; }
+        [Required(ErrorMessage = "Số điện thoại bắt buộc nhập")]
+        [Phone(ErrorMessage = "Số điện thoại không hợp lệ")]
+        [StringLength(15)]
+        public string SoDienThoai { get; set; } = null!;
 
         [EmailAddress]
-        [Display(Name = "Email")]
-        public string Email { get; set; }
+        [StringLength(100)]
+        public string? Email { get; set; }
 
-        [StringLength(200)]
-        [Display(Name = "Địa chỉ")]
-        public string DiaChi { get; set; }
+        [StringLength(255)]
+        public string? DiaChi { get; set; }
 
-        [Display(Name = "Ngày đăng ký")]
         public DateTime NgayDangKy { get; set; } = DateTime.Now;
 
-        [Display(Name = "Điểm tích lũy")]
+        [Range(0, int.MaxValue)]
         public int DiemTichLuy { get; set; } = 0;
 
-        [Display(Name = "Trạng thái")]
         public bool TrangThai { get; set; } = true;
+        public string? GhiChu { get; set; }
 
-        [StringLength(500)]
-        [Display(Name = "Ghi chú")]
-        public string GhiChu { get; set; }
-
-        // Navigation
-        public ICollection<DatSan> DanhSachDatSan { get; set; }
+        public virtual ICollection<DatSan> DatSans { get; set; } = new List<DatSan>();
     }
 }

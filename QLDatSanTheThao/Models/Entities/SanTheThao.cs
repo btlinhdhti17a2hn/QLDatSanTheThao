@@ -1,54 +1,49 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿// Họ và tên: [Điền tên SV 2]
+// Mã sinh viên: [Điền mã SV 2]
+// Nội dung thực hiện: Entity SanTheThao - Quản lý sân thể thao
+
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace QLDatSanTheThao.Models.Entities
 {
+    [Table("SanTheThao")]
     public class SanTheThao
     {
-            [Key]
-            public int MaSan { get; set; }
+        [Key]
+        public int MaSan { get; set; }
 
-            [Required, StringLength(100)]
-            [Display(Name = "Tên sân")]
-            public string TenSan { get; set; }
+        [Required(ErrorMessage = "Tên sân bắt buộc nhập")]
+        [StringLength(100)]
+        public string TenSan { get; set; } = null!;
 
-            [Required]
-            [Display(Name = "Loại sân")]
-            public int MaLoaiSan { get; set; }
+        [Required]
+        public int MaLoaiSan { get; set; }
+        [ForeignKey("MaLoaiSan")]
+        public virtual LoaiSan LoaiSan { get; set; } = null!;
 
-            [ForeignKey("MaLoaiSan")]
-            public LoaiSan LoaiSan { get; set; }
+        [Required(ErrorMessage = "Địa chỉ bắt buộc nhập")]
+        [StringLength(255)]
+        public string DiaChi { get; set; } = null!;
 
-            [StringLength(200)]
-            [Display(Name = "Địa chỉ")]
-            public string DiaChi { get; set; }
+        public string? TienIch { get; set; }
 
-            [StringLength(500)]
-            [Display(Name = "Tiện ích")]
-            public string TienIch { get; set; }
+        [Range(0, double.MaxValue, ErrorMessage = "Đơn giá >= 0")]
+        public decimal DonGia { get; set; }
 
-            [Column(TypeName = "decimal(18,2)")]
-            [Display(Name = "Đơn giá")]
-            public decimal DonGia { get; set; }
+        public bool TrangThai { get; set; } = true;
 
-            [Display(Name = "Trạng thái")]
-            public bool TrangThai { get; set; } = true;
+        [Required]
+        [DataType(DataType.Time)]
+        public TimeSpan GioMoCua { get; set; }
 
-            [Display(Name = "Giờ mở cửa")]
-            public TimeSpan GioMoCua { get; set; }
+        [Required]
+        [DataType(DataType.Time)]
+        public TimeSpan GioDongCua { get; set; }
 
-            [Display(Name = "Giờ đóng cửa")]
-            public TimeSpan GioDongCua { get; set; }
+        public string? GhiChu { get; set; }
+        public DateTime? NgayBaoTri { get; set; }
 
-            [StringLength(500)]
-            [Display(Name = "Ghi chú")]
-            public string GhiChu { get; set; }
-
-            [Display(Name = "Ngày bảo trì")]
-            public DateTime? NgayBaoTri { get; set; }
-
-            // Navigation
-            public ICollection<DatSan> DanhSachDatSan { get; set; }
-       
+        public virtual ICollection<DatSan> DatSans { get; set; } = new List<DatSan>();
     }
 }

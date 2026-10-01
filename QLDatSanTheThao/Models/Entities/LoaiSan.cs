@@ -1,8 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿// Họ và tên: [Điền tên SV 1]
+// Mã sinh viên: [Điền mã SV 1]
+// Nội dung thực hiện: Entity LoaiSan - Quản lý dữ liệu nền
+
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace QLDatSanTheThao.Models.Entities
 {
+    [Table("LoaiSan")]
     public class LoaiSan
     {
         [Key]
@@ -10,26 +15,18 @@ namespace QLDatSanTheThao.Models.Entities
 
         [Required(ErrorMessage = "Tên loại sân không được để trống")]
         [StringLength(100)]
-        [Display(Name = "Tên loại")]
-        public string TenLoai { get; set; }
+        public string TenLoai { get; set; } = null!;
 
-        [StringLength(500)]
-        [Display(Name = "Mô tả")]
-        public string MoTa { get; set; }
+        public string? MoTa { get; set; }
 
         [Range(1, 100, ErrorMessage = "Số người tối đa phải lớn hơn 0")]
-        [Display(Name = "Số người tối đa")]
         public int SoNguoiToiDa { get; set; }
 
-        [Column(TypeName = "decimal(18,2)")]
-        [Range(0, double.MaxValue, ErrorMessage = "Đơn giá phải >= 0")]
-        [Display(Name = "Đơn giá theo giờ")]
+        [Range(0, double.MaxValue, ErrorMessage = "Đơn giá phải lớn hơn hoặc bằng 0")]
         public decimal DonGiaTheoGio { get; set; }
 
-        [Display(Name = "Trạng thái")]
         public bool TrangThai { get; set; } = true;
 
-        // Navigation
-        public ICollection<SanTheThao> DanhSachSan { get; set; }
+        public virtual ICollection<SanTheThao> SanTheThaos { get; set; } = new List<SanTheThao>();
     }
 }

@@ -1,0 +1,72 @@
+﻿@model IEnumerable<QLDatSanTheThao.Models.Entities.LoaiSan>
+@{
+    ViewData["Title"] = "Quản lý Loại Sân";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-success fw-bold">⚙️ QUẢN LÝ LOẠI SÂN (DỮ LIỆU NỀN)</h2>
+        <a asp-action="Create" class="btn btn-success fw-bold">+ Thêm Loại Sân Mới</a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <table class="table table-hover align-middle">
+                <thead class="table-success">
+                    <tr>
+                        <th>Mã</th>
+                        <th>Tên Loại Sân</th>
+                        <th>Mô Tả</th>
+                        <th>Số Người Tối Đa</th>
+                        <th>Đơn Giá / Giờ</th>
+                        <th>Trạng Thái</th>
+                        <th class="text-center">Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.MaLoaiSan</td>
+                            <td class="fw-bold">@item.TenLoai</td>
+                            <td>@item.MoTa</td>
+                            <td>@item.SoNguoiToiDa người</td>
+                            <td class="text-danger fw-bold">@item.DonGiaTheoGio.ToString("N0") đ</td>
+                            <td>
+                                @if (item.TrangThai)
+                                {
+                                    <span class="badge bg-success">Hoạt động</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Khóa</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <a asp-action="Edit" asp-route-id="@item.MaLoaiSan" class="btn btn-sm btn-warning text-white fw-bold me-1">Sửa</a>
+                                <form asp-action="Delete" asp-route-id="@item.MaLoaiSan" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa loại sân này không?');">
+                                    <button type="submit" class="btn btn-sm btn-danger fw-bold">Xóa</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

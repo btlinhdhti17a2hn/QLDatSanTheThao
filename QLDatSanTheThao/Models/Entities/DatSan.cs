@@ -1,52 +1,47 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿// Họ và tên: [Điền tên SV 4]
+// Mã sinh viên: [Điền mã SV 4]
+// Nội dung thực hiện: Entity DatSan - Xử lý đặt sân
+
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace QLDatSanTheThao.Models.Entities
 {
+    [Table("DatSan")]
     public class DatSan
     {
         [Key]
         public int MaDatSan { get; set; }
 
         [Required]
-        [Display(Name = "Khách hàng")]
         public int MaKhachHang { get; set; }
-
         [ForeignKey("MaKhachHang")]
-        public KhachHang KhachHang { get; set; }
+        public virtual KhachHang KhachHang { get; set; } = null!;
 
         [Required]
-        [Display(Name = "Sân")]
         public int MaSan { get; set; }
-
         [ForeignKey("MaSan")]
-        public SanTheThao SanTheThao { get; set; }
+        public virtual SanTheThao SanTheThao { get; set; } = null!;
 
         [Required]
-        [Display(Name = "Ngày đặt")]
-        public DateTime NgayDat { get; set; }
+        public DateTime NgayDat { get; set; } = DateTime.Now;
 
         [Required]
-        [Display(Name = "Giờ bắt đầu")]
-        public TimeSpan GioBatDau { get; set; }
+        public DateTime GioBatDau { get; set; }
 
         [Required]
-        [Display(Name = "Giờ kết thúc")]
-        public TimeSpan GioKetThuc { get; set; }
+        public DateTime GioKetThuc { get; set; }
 
-        [Column(TypeName = "decimal(18,2)")]
-        [Display(Name = "Đơn giá")]
+        [Range(0, double.MaxValue)]
         public decimal DonGia { get; set; }
 
-        [Column(TypeName = "decimal(18,2)")]
-        [Display(Name = "Tiền cọc")]
+        [Range(0, double.MaxValue)]
         public decimal TienCoc { get; set; }
 
-        [Required, StringLength(20)]
-        [Display(Name = "Trạng thái")]
-        public string TrangThai { get; set; } = "ChoXuLy"; // Luồng bắt buộc: ChoXuLy -> DangXuLy -> HoanThanh (nhánh Huy/TuChoi chỉ khi đủ điều kiện)
+        [Required]
+        [StringLength(50)]
+        public string TrangThai { get; set; } = "Chờ xử lý";
 
-        // Navigation
-        public ICollection<ChiTietDatSan> ChiTietDichVu { get; set; }
+        public virtual ICollection<ChiTietDatSan> ChiTietDatSans { get; set; } = new List<ChiTietDatSan>();
     }
 }
