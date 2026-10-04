@@ -1,0 +1,69 @@
+@* 
+    Họ và tên: [Điền tên SV 2]
+    Mã sinh viên: [Điền mã SV 2]
+    Nội dung thực hiện: View Details - Xem chi tiết thông tin sân thể thao (Module 2)
+*@
+
+@model QLDatSanTheThao.Models.Entities.SanTheThao
+
+@{
+    ViewData["Title"] = "Chi Tiết Sân: " + Model.TenSan;
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow rounded-3 overflow-hidden">
+                <div class="bg-primary bg-gradient text-white p-4">
+                    <span class="badge bg-light text-primary fw-bold mb-2">@Model.LoaiSan.TenLoai</span>
+                    <h3 class="fw-bold mb-0">@Model.TenSan</h3>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="text-muted small d-block">Địa chỉ sân</label>
+                            <span class="fw-semibold text-dark fs-6"><i class="bi bi-geo-alt-fill text-danger me-1"></i>@Model.DiaChi</span>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small d-block">Đơn giá / giờ</label>
+                            <span class="fw-bold text-danger fs-5">@Model.DonGia.ToString("N0") VNĐ</span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="text-muted small d-block">Giờ mở cửa - Đóng cửa</label>
+                            <span class="fw-semibold text-dark"><i class="bi bi-clock me-1"></i>@Model.GioMoCua.ToString(@"hh\:mm") - @Model.GioDongCua.ToString(@"hh\:mm")</span>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small d-block">Trạng thái hoạt động</label>
+                            @if (Model.TrangThai)
+                            {
+                                <span class="badge bg-success fs-6"><i class="bi bi-check-circle me-1"></i>Đang hoạt động</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary fs-6">Tạm ngưng hoạt động</span>
+                            }
+                        </div>
+
+                        <div class="col-12">
+                            <label class="text-muted small d-block">Tiện ích đi kèm</label>
+                            <p class="text-dark bg-light p-3 rounded"><i class="bi bi-stars text-warning me-1"></i>@(string.IsNullOrEmpty(Model.TienIch) ? "Chưa cập nhật tiện ích" : Model.TienIch)</p>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(Model.GhiChu))
+                        {
+                            <div class="col-12">
+                                <label class="text-muted small d-block">Ghi chú thêm</label>
+                                <p class="text-secondary mb-0">@Model.GhiChu</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="card-footer bg-light p-3 d-flex justify-content-between align-items-center">
+                    <a asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i> Quay lại danh sách</a>
+                    <a asp-controller="KhachHang" asp-action="TaoDatSan" asp-route-maSan="@Model.MaSan" class="btn btn-success fw-bold px-4"><i class="bi bi-calendar-plus me-1"></i> Đặt Sân Này</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,179 @@
+@* 
+    Họ và tên: [Điền tên SV 2]
+    Mã sinh viên: [Điền mã SV 2]
+    Nội dung thực hiện: View Index - Danh sách sân thể thao với Tìm kiếm, Lọc, Sắp xếp và Phân trang (Module 2)
+*@
+
+@model QLDatSanTheThao.Models.ViewModels.SanTheThaoListViewModel
+
+@{
+    ViewData["Title"] = "Danh Sách Sân Thể Thao";
+}
+
+<div class="container py-4">
+    <!-- TIÊU ĐỀ KHỐI -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-primary mb-1"><i class="bi bi-trophy-fill me-2"></i>Danh Sách Sân Thể Thao</h2>
+            <p class="text-muted mb-0">Tìm kiếm và đặt sân thể thao nhanh chóng, tiện lợi</p>
+        </div>
+        @if (Context.Session.GetString("VaiTro") == "Admin" || Context.Session.GetString("VaiTro") == "NhanVien")
+        {
+            <a asp-action="AdminIndex" class="btn btn-outline-primary"><i class="bi bi-gear-fill me-1"></i> Quản Lý Sân (Admin)</a>
+        }
+    </div>
+
+    <!-- KHỐI BỘ LỌC VÀ TÌM KIẾM -->
+    <div class="card shadow-sm border-0 mb-4 bg-light">
+        <div class="card-body p-4">
+            <form method="get" asp-action="Index" class="row g-3">
+                <!-- 1. TÌM KIẾM TỪ KHÓA -->
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold text-dark"><i class="bi bi-search me-1"></i>Từ khóa tìm kiếm</label>
+                    <input type="text" name="searchString" value="@Model.SearchString" class="form-control" placeholder="Nhập tên sân, địa chỉ...">
+                </div>
+
+                <!-- 2. LỌC LOẠI SÂN -->
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold text-dark"><i class="bi bi-funnel me-1"></i>Loại sân</label>
+                    <select name="maLoaiSan" class="form-select">
+                        <option value="">-- Tất cả loại sân --</option>
+                        @foreach (var loai in Model.LoaiSans)
+                        {
+                            if (Model.MaLoaiSan == loai.MaLoaiSan)
+                            {
+                                <option value="@loai.MaLoaiSan" selected="selected">@loai.TenLoai</option>
+                            }
+                            else
+                            {
+                                <option value="@loai.MaLoaiSan">@loai.TenLoai</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <!-- 3. SẮP XẾP -->
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold text-dark"><i class="bi bi-sort-down me-1"></i>Sắp xếp theo</label>
+                    <select name="sortOrder" class="form-select">
+                        <option value="ten_asc" selected="@(Model.SortOrder == "ten_asc" ? "selected" : null)">Tên sân (A - Z)</option>
+                        <option value="ten_desc" selected="@(Model.SortOrder == "ten_desc" ? "selected" : null)">Tên sân (Z - A)</option>
+                        <option value="gia_asc" selected="@(Model.SortOrder == "gia_asc" ? "selected" : null)">Đơn giá (Thấp đến Cao)</option>
+                        <option value="gia_desc" selected="@(Model.SortOrder == "gia_desc" ? "selected" : null)">Đơn giá (Cao đến Thấp)</option>
+                        <option value="gio_asc" selected="@(Model.SortOrder == "gio_asc" ? "selected" : null)">Giờ mở cửa (Sớm nhất)</option>
+                    </select>
+                </div>
+
+                <!-- 4. LỌC KHOẢNG GIÁ -->
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold text-dark">Giá từ (VNĐ)</label>
+                    <input type="number" name="minPrice" value="@Model.MinPrice" class="form-control" placeholder="Từ giá">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold text-dark">Giá đến (VNĐ)</label>
+                    <input type="number" name="maxPrice" value="@Model.MaxPrice" class="form-control" placeholder="Đến giá">
+                </div>
+
+                <!-- NÚT THAO TÁC -->
+                <div class="col-md-4 d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-primary fw-semibold px-4"><i class="bi bi-funnel-fill me-1"></i> Áp Dụng Lọc</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-counterclockwise me-1"></i> Đặt Lại</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- DANH SÁCH SÂN THỂ THAO -->
+    @if (Model.Items == null || !Model.Items.Any())
+    {
+        <div class="alert alert-warning text-center py-5 my-4 shadow-sm rounded-3">
+            <i class="bi bi-exclamation-triangle fs-1 text-warning d-block mb-2"></i>
+            <h5 class="fw-bold">Không tìm thấy sân thể thao phù hợp!</h5>
+            <p class="text-muted mb-0">Vui lòng thử tìm kiếm lại với các tiêu chí lọc khác.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
+            @foreach (var san in Model.Items)
+            {
+                <div class="col">
+                    <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden">
+                        <div class="bg-primary bg-gradient text-white p-3 d-flex justify-content-between align-items-center">
+                            <span class="badge bg-light text-primary fw-bold px-3 py-2 fs-6">@san.LoaiSan.TenLoai</span>
+                            <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Đang hoạt động</span>
+                        </div>
+                        <div class="card-body p-4">
+                            <h5 class="card-title fw-bold text-dark mb-2">@san.TenSan</h5>
+                            <p class="text-muted small mb-2"><i class="bi bi-geo-alt-fill text-danger me-1"></i>@san.DiaChi</p>
+                            
+                            @if (!string.IsNullOrEmpty(san.TienIch))
+                            {
+                                <p class="small text-secondary mb-3"><i class="bi bi-stars text-warning me-1"></i>@san.TienIch</p>
+                            }
+
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                <div>
+                                    <small class="text-muted d-block">Giờ hoạt động</small>
+                                    <span class="fw-semibold text-dark"><i class="bi bi-clock me-1"></i>@san.GioMoCua.ToString(@"hh\:mm") - @san.GioDongCua.ToString(@"hh\:mm")</span>
+                                </div>
+                                <div class="text-end">
+                                    <small class="text-muted d-block">Đơn giá / giờ</small>
+                                    <span class="fw-bold text-danger fs-5">@san.DonGia.ToString("N0") đ</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white border-0 p-3 d-flex gap-2">
+                            <a asp-action="Details" asp-route-id="@san.MaSan" class="btn btn-outline-primary flex-fill fw-semibold"><i class="bi bi-eye me-1"></i> Chi Tiết</a>
+                            <a asp-controller="KhachHang" asp-action="TaoDatSan" asp-route-maSan="@san.MaSan" class="btn btn-success flex-fill fw-semibold"><i class="bi bi-calendar-plus me-1"></i> Đặt Sân Ngay</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- THANH PHÂN TRANG (PAGINATION) BẢO TOÀN ĐIỀU KIỆN LỌC -->
+        @if (Model.TotalPages > 1)
+        {
+            <nav aria-label="Page navigation" class="d-flex justify-content-between align-items-center pt-3">
+                <span class="text-muted small">Hiển thị trang <strong>@Model.PageIndex</strong> / <strong>@Model.TotalPages</strong> (Tổng <strong>@Model.TotalItems</strong> sân)</span>
+
+                <ul class="pagination mb-0">
+                    <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
+                        <a class="page-link" asp-action="Index"
+                           asp-route-pageIndex="@(Model.PageIndex - 1)"
+                           asp-route-searchString="@Model.SearchString"
+                           asp-route-maLoaiSan="@Model.MaLoaiSan"
+                           asp-route-minPrice="@Model.MinPrice"
+                           asp-route-maxPrice="@Model.MaxPrice"
+                           asp-route-sortOrder="@Model.SortOrder">&laquo; Trang trước</a>
+                    </li>
+
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                            <a class="page-link" asp-action="Index"
+                               asp-route-pageIndex="@i"
+                               asp-route-searchString="@Model.SearchString"
+                               asp-route-maLoaiSan="@Model.MaLoaiSan"
+                               asp-route-minPrice="@Model.MinPrice"
+                               asp-route-maxPrice="@Model.MaxPrice"
+                               asp-route-sortOrder="@Model.SortOrder">@i</a>
+                        </li>
+                    }
+
+                    <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
+                        <a class="page-link" asp-action="Index"
+                           asp-route-pageIndex="@(Model.PageIndex + 1)"
+                           asp-route-searchString="@Model.SearchString"
+                           asp-route-maLoaiSan="@Model.MaLoaiSan"
+                           asp-route-minPrice="@Model.MinPrice"
+                           asp-route-maxPrice="@Model.MaxPrice"
+                           asp-route-sortOrder="@Model.SortOrder">Trang sau &raquo;</a>
+                    </li>
+                </ul>
+            </nav>
+        }
+    }
+</div>

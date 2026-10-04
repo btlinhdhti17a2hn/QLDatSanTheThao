@@ -1,0 +1,89 @@
+@* 
+    Họ và tên: [Điền tên SV 2]
+    Mã sinh viên: [Điền mã SV 2]
+    Nội dung thực hiện: View Edit - Cập nhật thông tin sân thể thao (Module 2)
+*@
+
+@model QLDatSanTheThao.Models.Entities.SanTheThao
+
+@{
+    ViewData["Title"] = "Cập Nhật Sân: " + Model.TenSan;
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow rounded-3">
+                <div class="card-header bg-warning text-dark p-3">
+                    <h4 class="fw-bold mb-0"><i class="bi bi-pencil-square me-2"></i>Cập Nhật Thông Tin Sân Thể Thao</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="MaSan" />
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label asp-for="TenSan" class="form-label fw-semibold">Tên sân thể thao <span class="text-danger">*</span></label>
+                                <input asp-for="TenSan" class="form-control" />
+                                <span asp-validation-for="TenSan" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="MaLoaiSan" class="form-label fw-semibold">Loại sân <span class="text-danger">*</span></label>
+                                <select asp-for="MaLoaiSan" class="form-select" asp-items="ViewBag.MaLoaiSan"></select>
+                                <span asp-validation-for="MaLoaiSan" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-12">
+                                <label asp-for="DiaChi" class="form-label fw-semibold">Địa chỉ sân <span class="text-danger">*</span></label>
+                                <input asp-for="DiaChi" class="form-control" />
+                                <span asp-validation-for="DiaChi" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="DonGia" class="form-label fw-semibold">Đơn giá / giờ (VNĐ) <span class="text-danger">*</span></label>
+                                <input asp-for="DonGia" type="number" class="form-control" />
+                                <span asp-validation-for="DonGia" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label asp-for="GioMoCua" class="form-label fw-semibold">Giờ mở cửa <span class="text-danger">*</span></label>
+                                <input asp-for="GioMoCua" type="time" class="form-control" />
+                                <span asp-validation-for="GioMoCua" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label asp-for="GioDongCua" class="form-label fw-semibold">Giờ đóng cửa <span class="text-danger">*</span></label>
+                                <input asp-for="GioDongCua" type="time" class="form-control" />
+                                <span asp-validation-for="GioDongCua" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-12">
+                                <label asp-for="TienIch" class="form-label fw-semibold">Tiện ích đi kèm</label>
+                                <textarea asp-for="TienIch" class="form-control" rows="2"></textarea>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-check form-switch mt-2">
+                                    <input class="form-check-input" type="checkbox" asp-for="TrangThai">
+                                    <label class="form-check-label fw-semibold" asp-for="TrangThai">Trạng thái Đang hoạt động</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                            <a asp-action="AdminIndex" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i> Hủy bỏ</a>
+                            <button type="submit" class="btn btn-warning fw-bold px-4"><i class="bi bi-save me-1"></i> Lưu Thay Đổi</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
