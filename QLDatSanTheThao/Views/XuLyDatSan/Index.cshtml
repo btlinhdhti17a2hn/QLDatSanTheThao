@@ -1,0 +1,237 @@
+﻿@*
+    Họ và tên: [Điền họ tên SV 4]
+    Mã sinh viên: [Điền mã SV 4]
+    Nội dung thực hiện: View Index - Danh sách đặt sân cần xử lý: tìm kiếm, lọc, sắp xếp, phân trang,
+    nút xác nhận/hoàn thành/hủy theo trạng thái (Module 4)
+*@
+
+@model QLDatSanTheThao.Models.ViewModels.DatSanXuLyListViewModel
+@using QLDatSanTheThao.Services
+
+@{
+    ViewData["Title"] = "Xử lý đặt sân";
+    string returnUrl = Context.Request.Path.Value + Context.Request.QueryString.Value;
+    string tuNgayStr = Model.TuNgay?.ToString("yyyy-MM-dd") ?? "";
+    string denNgayStr = Model.DenNgay?.ToString("yyyy-MM-dd") ?? "";
+
+    string Badge(string tt) => tt switch
+    {
+        TrangThaiDatSan.ChoXuLy => "bg-warning text-dark",
+        TrangThaiDatSan.DangXuLy => "bg-primary",
+        TrangThaiDatSan.HoanThanh => "bg-success",
+        TrangThaiDatSan.DaHuy => "bg-danger",
+        _ => "bg-secondary"
+    };
+
+    int SoLuong(string tt) => Model.ThongKeTrangThai.TryGetValue(tt, out var n) ? n : 0;
+}
+
+<div class="container-fluid mt-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="text-primary fw-bold mb-0"><i class="bi bi-clipboard-check me-2"></i>XỬ LÝ ĐẶT SÂN</h2>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(Model.CanhBaoLoc))
+    {
+        <div class="alert alert-warning">@Model.CanhBaoLoc</div>
+    }
+
+    <!-- Tổng quan theo trạng thái (bấm để lọc nhanh) -->
+    <div class="row g-2 mb-3">
+        @foreach (var tt in Model.TrangThais)
+        {
+            <div class="col-6 col-md-3">
+                <a asp-action="Index" asp-route-trangThai="@tt" class="text-decoration-none">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body py-2 d-flex justify-content-between align-items-center">
+                            <span class="badge @Badge(tt)">@tt</span>
+                            <span class="fs-4 fw-bold text-dark">@SoLuong(tt)</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+
+    <!-- Bộ lọc: Tìm kiếm + Lọc + Sắp xếp (kết hợp được với nhau) -->
+    <form asp-action="Index" method="get" class="card card-body shadow-sm border-0 mb-3">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label small mb-1">Tìm kiếm</label>
+                <input type="text" name="searchString" value="@Model.SearchString" class="form-control"
+                       placeholder="Tên/SĐT khách hàng, tên sân..." />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small mb-1">Loại sân</label>
+                <select name="maLoaiSan" class="form-select">
+                    <option value="">-- Tất cả --</option>
+                    @foreach (var l in Model.LoaiSans)
+                    {
+                        <option value="@l.MaLoaiSan" selected="@(Model.MaLoaiSan == l.MaLoaiSan)">@l.TenLoai</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small mb-1">Trạng thái</label>
+                <select name="trangThai" class="form-select">
+                    <option value="">-- Tất cả --</option>
+                    @foreach (var tt in Model.TrangThais)
+                    {
+                        <option value="@tt" selected="@(Model.TrangThai == tt)">@tt</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small mb-1">Từ ngày</label>
+                <input type="date" name="tuNgay" value="@tuNgayStr" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small mb-1">Đến ngày</label>
+                <input type="date" name="denNgay" value="@denNgayStr" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small mb-1">Sắp xếp</label>
+                <select name="sortOrder" class="form-select">
+                    <option value="" selected="@(string.IsNullOrEmpty(Model.SortOrder))">Ngày sử dụng: mới nhất</option>
+                    <option value="ngay_asc" selected="@(Model.SortOrder == "ngay_asc")">Ngày sử dụng: cũ nhất</option>
+                    <option value="khach_asc" selected="@(Model.SortOrder == "khach_asc")">Khách hàng A → Z</option>
+                    <option value="khach_desc" selected="@(Model.SortOrder == "khach_desc")">Khách hàng Z → A</option>
+                    <option value="san_asc" selected="@(Model.SortOrder == "san_asc")">Tên sân A → Z</option>
+                    <option value="san_desc" selected="@(Model.SortOrder == "san_desc")">Tên sân Z → A</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-search me-1"></i>Lọc</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Đặt lại</a>
+            </div>
+        </div>
+    </form>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div class="text-muted small mb-2">Tìm thấy <strong>@Model.TotalItems</strong> đơn đặt sân</div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Mã</th>
+                            <th>Khách hàng</th>
+                            <th>Sân</th>
+                            <th>Ngày sử dụng</th>
+                            <th>Khung giờ</th>
+                            <th class="text-end">Tổng thanh toán</th>
+                            <th>Trạng thái</th>
+                            <th class="text-center">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.Items.Any())
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center text-muted py-4">Không có đơn đặt sân nào phù hợp.</td>
+                            </tr>
+                        }
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td>#@item.MaDatSan</td>
+                                <td>
+                                    <div class="fw-semibold">@item.KhachHang.HoTen</div>
+                                    <div class="small text-muted">@item.KhachHang.SoDienThoai</div>
+                                </td>
+                                <td>
+                                    <div>@item.SanTheThao.TenSan</div>
+                                    <div class="small text-muted">@item.SanTheThao.LoaiSan.TenLoai</div>
+                                </td>
+                                <td>@item.GioBatDau.ToString("dd/MM/yyyy")</td>
+                                <td>@item.GioBatDau.ToString("HH:mm") - @item.GioKetThuc.ToString("HH:mm")</td>
+                                <td class="text-end fw-semibold text-danger">@((item.DonGia + item.ChiTietDatSans.Sum(c => c.ThanhTien)).ToString("N0")) đ</td>
+                                <td><span class="badge @Badge(item.TrangThai)">@item.TrangThai</span></td>
+                                <td class="text-center text-nowrap">
+                                    <a asp-action="Details" asp-route-id="@item.MaDatSan" class="btn btn-sm btn-outline-info">Chi tiết</a>
+
+                                    @if (DatSanNghiepVu.CoTheXacNhan(item))
+                                    {
+                                        <form asp-action="XacNhan" asp-route-id="@item.MaDatSan" method="post" class="d-inline">
+                                            <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                            <button type="submit" class="btn btn-sm btn-success">Xác nhận</button>
+                                        </form>
+                                    }
+                                    @if (DatSanNghiepVu.CoTheHoanThanh(item))
+                                    {
+                                        <form asp-action="HoanThanh" asp-route-id="@item.MaDatSan" method="post" class="d-inline">
+                                            <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                            <button type="submit" class="btn btn-sm btn-primary">Hoàn thành</button>
+                                        </form>
+                                    }
+                                    @if (DatSanNghiepVu.CoTheHuy(item))
+                                    {
+                                        <form asp-action="Huy" asp-route-id="@item.MaDatSan" method="post" class="d-inline"
+                                              onsubmit="return confirm('Bạn chắc chắn muốn hủy đơn #@(item.MaDatSan)?');">
+                                            <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Hủy</button>
+                                        </form>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Phân trang: giữ nguyên toàn bộ điều kiện tìm kiếm/lọc/sắp xếp khi chuyển trang -->
+            @if (Model.TotalPages > 1)
+            {
+                <nav aria-label="Phân trang">
+                    <ul class="pagination justify-content-center mb-0">
+                        <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                            <a class="page-link" asp-action="Index" asp-route-pageIndex="@(Model.PageIndex - 1)"
+                               asp-route-searchString="@Model.SearchString" asp-route-maLoaiSan="@Model.MaLoaiSan"
+                               asp-route-trangThai="@Model.TrangThai" asp-route-tuNgay="@tuNgayStr"
+                               asp-route-denNgay="@denNgayStr" asp-route-sortOrder="@Model.SortOrder">Trang trước</a>
+                        </li>
+
+                        @for (int p = 1; p <= Model.TotalPages; p++)
+                        {
+                            if (p == 1 || p == Model.TotalPages || Math.Abs(p - Model.PageIndex) <= 2)
+                            {
+                                <li class="page-item @(p == Model.PageIndex ? "active" : "")">
+                                    <a class="page-link" asp-action="Index" asp-route-pageIndex="@p"
+                                       asp-route-searchString="@Model.SearchString" asp-route-maLoaiSan="@Model.MaLoaiSan"
+                                       asp-route-trangThai="@Model.TrangThai" asp-route-tuNgay="@tuNgayStr"
+                                       asp-route-denNgay="@denNgayStr" asp-route-sortOrder="@Model.SortOrder">@p</a>
+                                </li>
+                            }
+                            else if (Math.Abs(p - Model.PageIndex) == 3)
+                            {
+                                <li class="page-item disabled"><span class="page-link">…</span></li>
+                            }
+                        }
+
+                        <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                            <a class="page-link" asp-action="Index" asp-route-pageIndex="@(Model.PageIndex + 1)"
+                               asp-route-searchString="@Model.SearchString" asp-route-maLoaiSan="@Model.MaLoaiSan"
+                               asp-route-trangThai="@Model.TrangThai" asp-route-tuNgay="@tuNgayStr"
+                               asp-route-denNgay="@denNgayStr" asp-route-sortOrder="@Model.SortOrder">Trang sau</a>
+                        </li>
+                    </ul>
+                    <div class="text-center text-muted small mt-2">Trang @Model.PageIndex / @Model.TotalPages</div>
+                </nav>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,231 @@
+﻿@*
+    Họ và tên: [Điền họ tên SV 4]
+    Mã sinh viên: [Điền mã SV 4]
+    Nội dung thực hiện: View Details - Chi tiết đặt sân, cảnh báo trùng lịch/điều kiện và các nút xử lý
+    trạng thái phù hợp (Module 4)
+*@
+
+@model QLDatSanTheThao.Models.ViewModels.DatSanXuLyChiTietViewModel
+@using QLDatSanTheThao.Services
+
+@{
+    var d = Model.DatSan;
+    ViewData["Title"] = "Chi tiết đặt sân #" + d.MaDatSan;
+
+    // Tiền hiển thị cho nhân viên xem (tính tiền chính thức thuộc Module 5)
+    decimal tongThanhToan = d.DonGia + Model.TongTienDichVu;
+    decimal conPhaiThu = tongThanhToan - d.TienCoc;
+
+    string Badge(string tt) => tt switch
+    {
+        TrangThaiDatSan.ChoXuLy => "bg-warning text-dark",
+        TrangThaiDatSan.DangXuLy => "bg-primary",
+        TrangThaiDatSan.HoanThanh => "bg-success",
+        TrangThaiDatSan.DaHuy => "bg-danger",
+        _ => "bg-secondary"
+    };
+}
+
+<div class="container py-4">
+    <div class="mb-3">
+        <a asp-action="Index" class="text-decoration-none"><i class="bi bi-arrow-left"></i> Quay lại danh sách</a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @* SỬA: bỏ cột bên phải, chỉ còn một thẻ chính nằm giữa trang *@
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="card border-0 shadow rounded-3">
+                <div class="bg-primary bg-gradient text-white p-4 d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="small opacity-75">Đơn đặt sân</div>
+                        <h3 class="fw-bold mb-0">#@d.MaDatSan - @d.SanTheThao.TenSan</h3>
+                    </div>
+                    <span class="badge @Badge(d.TrangThai) fs-6">@d.TrangThai</span>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="text-muted small d-block">Khách hàng</label>
+                            <span class="fw-semibold">@d.KhachHang.HoTen</span>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small d-block">Số điện thoại</label>
+                            <span class="fw-semibold">@d.KhachHang.SoDienThoai</span>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small d-block">Sân / Loại sân</label>
+                            <span class="fw-semibold">@d.SanTheThao.TenSan</span>
+                            <span class="badge bg-light text-primary border">@d.SanTheThao.LoaiSan.TenLoai</span>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small d-block">Giờ mở cửa của sân</label>
+                            <span class="fw-semibold">@d.SanTheThao.GioMoCua.ToString(@"hh\:mm") - @d.SanTheThao.GioDongCua.ToString(@"hh\:mm")</span>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small d-block">Thời điểm đặt (hệ thống ghi nhận)</label>
+                            <span class="fw-semibold">@d.NgayDat.ToString("dd/MM/yyyy HH:mm")</span>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small d-block">Khung giờ sử dụng</label>
+                            <span class="fw-semibold">
+                                @d.GioBatDau.ToString("dd/MM/yyyy") &nbsp;
+                                @d.GioBatDau.ToString("HH:mm") - @d.GioKetThuc.ToString("HH:mm")
+                            </span>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small d-block">Tiền sân dự kiến</label>
+                            <span class="fw-bold fs-5">@d.DonGia.ToString("N0") VNĐ</span>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small d-block">Tiền cọc</label>
+                            <span class="fw-bold fs-5">@d.TienCoc.ToString("N0") VNĐ</span>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small d-block">Tiền dịch vụ</label>
+                            <span class="fw-bold fs-5">@Model.TongTienDichVu.ToString("N0") VNĐ</span>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small d-block">Tổng thanh toán (sân + dịch vụ)</label>
+                            <span class="fw-bold text-danger fs-5">@tongThanhToan.ToString("N0") VNĐ</span>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small d-block">Còn phải thu (đã trừ cọc)</label>
+                            <span class="fw-bold text-success fs-5">@conPhaiThu.ToString("N0") VNĐ</span>
+                        </div>
+                    </div>
+
+                    <hr />
+                    <h6 class="fw-bold">Dịch vụ đi kèm</h6>
+                    @if (!d.ChiTietDatSans.Any())
+                    {
+                        <p class="text-muted mb-0">Không có dịch vụ đi kèm.</p>
+                    }
+                    else
+                    {
+                        <table class="table table-sm align-middle mb-1">
+                            <thead>
+                                <tr>
+                                    <th>Dịch vụ</th>
+                                    <th class="text-end">SL</th>
+                                    <th class="text-end">Đơn giá</th>
+                                    <th class="text-end">Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var ct in d.ChiTietDatSans)
+                                {
+                                    <tr>
+                                        <td>@ct.DichVu.TenDichVu</td>
+                                        <td class="text-end">@ct.SoLuong</td>
+                                        <td class="text-end">@ct.DonGia.ToString("N0")</td>
+                                        <td class="text-end">@ct.ThanhTien.ToString("N0")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="3" class="text-end">Tổng tiền dịch vụ</th>
+                                    <th class="text-end">@Model.TongTienDichVu.ToString("N0")</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    }
+
+                    @* ===== SỬA: khu vực xử lý trạng thái chuyển xuống cuối thẻ chính ===== *@
+                    <hr />
+
+                    @* Cảnh báo chưa đủ điều kiện xác nhận (chỉ hiện khi có lỗi) *@
+                    @if (Model.CoTheXacNhan && Model.CanhBao.Any())
+                    {
+                        <div class="alert alert-danger small">
+                            <strong>Chưa đủ điều kiện xác nhận:</strong>
+                            <ul class="mb-0 ps-3">
+                                @foreach (var cb in Model.CanhBao)
+                                {
+                                    <li>@cb</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    @* Cảnh báo trùng lịch với đơn đã xác nhận (chỉ hiện khi có trùng) *@
+                    @if (Model.LichDaXacNhanTrung.Any() && (d.TrangThai == TrangThaiDatSan.ChoXuLy || d.TrangThai == TrangThaiDatSan.DangXuLy))
+                    {
+                        <div class="alert alert-danger small">
+                            <strong>Trùng lịch với @Model.LichDaXacNhanTrung.Count đơn đã xác nhận:</strong>
+                            <ul class="mb-0 ps-3">
+                                @foreach (var t in Model.LichDaXacNhanTrung)
+                                {
+                                    <li>
+                                        <a asp-action="Details" asp-route-id="@t.MaDatSan">#@t.MaDatSan</a>
+                                        - @t.KhachHang.HoTen,
+                                        @t.GioBatDau.ToString("HH:mm") - @t.GioKetThuc.ToString("HH:mm")
+                                        (@t.TrangThai)
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    @* Cảnh báo có đơn chờ khác cùng khung giờ *@
+                    @if (Model.SoDonChoTrung > 0 && d.TrangThai == TrangThaiDatSan.ChoXuLy)
+                    {
+                        <div class="alert alert-warning small">
+                            Có <strong>@Model.SoDonChoTrung</strong> đơn khác đang chờ xử lý trùng khung giờ này.
+                            Nếu xác nhận đơn này, các đơn đó sẽ không thể xác nhận nữa.
+                        </div>
+                    }
+
+                    <div class="d-flex flex-wrap gap-2 align-items-center">
+                        @if (Model.CoTheXacNhan)
+                        {
+                            <form asp-action="XacNhan" asp-route-id="@d.MaDatSan" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-success" disabled="@(Model.CanhBao.Any())">
+                                    <i class="bi bi-check-circle me-1"></i>Xác nhận đặt sân
+                                </button>
+                            </form>
+                        }
+
+                        @if (Model.CoTheHoanThanh)
+                        {
+                            <form asp-action="HoanThanh" asp-route-id="@d.MaDatSan" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-flag me-1"></i>Đánh dấu hoàn thành
+                                </button>
+                            </form>
+                        }
+
+                        @if (Model.CoTheHuy)
+                        {
+                            <form asp-action="Huy" asp-route-id="@d.MaDatSan" method="post" class="d-inline"
+                                  onsubmit="return confirm('Bạn chắc chắn muốn hủy đơn này?');">
+                                <button type="submit" class="btn btn-outline-danger">
+                                    <i class="bi bi-x-circle me-1"></i>Hủy đơn
+                                </button>
+                            </form>
+                        }
+                        else if (!string.IsNullOrEmpty(Model.LyDoKhongTheHuy))
+                        {
+                            <span class="text-muted small"><i class="bi bi-info-circle me-1"></i>@Model.LyDoKhongTheHuy</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

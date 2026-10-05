@@ -41,6 +41,15 @@
                             </li>
                         }
 
+                        @* ===== THÊM MỚI (SV4): Menu Xử lý đặt sân cho Admin / Nhân viên ===== *@
+                        @if (vaiTroMenu == "Admin" || vaiTroMenu == "NhanVien")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-primary fw-bold" asp-controller="XuLyDatSan" asp-action="Index">Xử lý đặt sân</a>
+                            </li>
+                        }
+                        @* ===== HẾT PHẦN THÊM MỚI ===== *@
+
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Giới thiệu</a>
                         </li>
