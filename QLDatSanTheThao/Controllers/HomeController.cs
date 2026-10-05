@@ -6,6 +6,11 @@ namespace QLDatSanTheThao.Controllers
 {
     public class HomeController : Controller
     {
+        public IActionResult TestAdmin()
+        {
+            HttpContext.Session.SetString("VaiTro", "Admin");
+            return RedirectToAction("Index", "DichVu");
+        }
         public IActionResult Index()
         {
             return View();

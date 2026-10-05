@@ -1,0 +1,33 @@
+@* Họ và tên: Tạ Đình Kim
+   Mã sinh viên: 23103100315
+   Nội dung thực hiện: Xác nhận xóa dịch vụ (kiểm soát dữ liệu đã được tham chiếu). *@
+@model QLDatSanTheThao.Models.Entities.DichVu
+@{
+    ViewData["Title"] = "Xóa dịch vụ";
+    bool daSuDung = ViewBag.DaSuDung;
+}
+
+<h2>Xóa dịch vụ</h2>
+@if (daSuDung)
+{
+    <div class="alert alert-warning">
+        Dịch vụ này đã được sử dụng trong đơn đặt sân nên <strong>không thể xóa</strong>.
+        Hãy chuyển sang trạng thái ngừng cung cấp để không cho dùng tiếp.
+    </div>
+}
+else
+{
+    <div class="alert alert-danger">Bạn có chắc chắn muốn xóa dịch vụ này?</div>
+}
+<dl class="row col-md-8">
+    <dt class="col-sm-4">Tên dịch vụ</dt><dd class="col-sm-8">@Model.TenDichVu</dd>
+    <dt class="col-sm-4">Đơn giá</dt><dd class="col-sm-8">@Model.DonGia.ToString("N0") đ</dd>
+</dl>
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="MaDichVu" />
+    @if (!daSuDung)
+    {
+        <button type="submit" class="btn btn-danger">Xác nhận xóa</button>
+    }
+    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+</form>
