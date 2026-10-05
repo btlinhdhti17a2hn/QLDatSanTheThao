@@ -1,0 +1,259 @@
+@* 
+    Họ và tên: [Điền tên SV 3]
+    Mã sinh viên: [Điền mã SV 3]
+    Nội dung thực hiện: View TaoDatSan - Giao diện Form Đặt Sân kèm chọn Dịch vụ & Hộp thoại Popup thông báo lỗi bằng Tiếng Việt (Module 3 & Module 5)
+*@
+
+@model QLDatSanTheThao.Models.ViewModels.TaoDatSanViewModel
+
+@{
+    ViewData["Title"] = "Đặt Sân: " + Model.TenSan;
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <!-- THÔNG TIN SÂN CHỌN ĐẶT -->
+                <div class="bg-primary bg-gradient text-white p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge bg-light text-primary fw-bold mb-2">@Model.TenLoaiSan</span>
+                            <h3 class="fw-bold mb-1"><i class="bi bi-trophy-fill me-2"></i>@Model.TenSan</h3>
+                            <p class="mb-0 text-white-50"><i class="bi bi-geo-alt-fill me-1"></i>@Model.DiaChi</p>
+                        </div>
+                        <div class="text-end">
+                            <span class="small d-block text-white-50">Đơn giá sân</span>
+                            <span class="fs-4 fw-bold text-warning">@Model.DonGiaTheoGio.ToString("N0") đ/giờ</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <form asp-action="TaoDatSan" method="post" id="formTaoDatSan">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="MaSan" />
+                        <input type="hidden" asp-for="TenSan" />
+                        <input type="hidden" asp-for="TenLoaiSan" />
+                        <input type="hidden" asp-for="DiaChi" />
+                        <input type="hidden" asp-for="DonGiaTheoGio" />
+                        <input type="hidden" asp-for="GioMoCua" />
+                        <input type="hidden" asp-for="GioDongCua" />
+
+                        <!-- 1. CHỌN THỜI GIAN ĐẶT SÂN -->
+                        <h5 class="fw-bold text-dark border-bottom pb-2 mb-3"><i class="bi bi-calendar-event me-2 text-primary"></i>1. Chọn Thời Gian Đặt Sân</h5>
+
+                        <!-- CẢNH BÁO PHỤ PHÍ QUÁ GIỜ -->
+                        <div class="alert alert-warning border-start border-warning border-4 shadow-sm mb-4">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-exclamation-triangle-fill fs-4 text-warning me-3"></i>
+                                <div>
+                                    <strong class="d-block text-dark mb-1"><i class="bi bi-clock-history me-1"></i>Lưu ý về quy định thời gian & phụ phí:</strong>
+                                    <span class="text-dark small">Vui lòng bàn giao sân đúng giờ đã đăng ký. Trong trường hợp sử dụng quá giờ, sân sẽ tính phụ phí <strong>+20.000 VNĐ / 10 phút quá giờ</strong>.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <label asp-for="NgaySuDung" class="form-label fw-semibold">Ngày sử dụng <span class="text-danger">*</span></label>
+                                <input asp-for="NgaySuDung" type="date" class="form-control form-control-lg" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                                <span asp-validation-for="NgaySuDung" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="GioBatDau" class="form-label fw-semibold">Giờ bắt đầu <span class="text-danger">*</span></label>
+                                <input asp-for="GioBatDau" type="time" class="form-control form-control-lg" id="gioBatDau" />
+                                <span asp-validation-for="GioBatDau" class="text-danger small"></span>
+                                <small class="text-muted">Mở cửa từ: @Model.GioMoCua.ToString(@"hh\:mm")</small>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="GioKetThuc" class="form-label fw-semibold">Giờ kết thúc <span class="text-danger">*</span></label>
+                                <input asp-for="GioKetThuc" type="time" class="form-control form-control-lg" id="gioKetThuc" />
+                                <span asp-validation-for="GioKetThuc" class="text-danger small"></span>
+                                <small class="text-muted">Đóng cửa lúc: @Model.GioDongCua.ToString(@"hh\:mm")</small>
+                            </div>
+                        </div>
+
+                        <!-- 2. DỊCH VỤ ĐI KÈM -->
+                        <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                            <i class="bi bi-basket3 me-2 text-primary"></i>2. Đăng Ký Dịch Vụ Đi Kèm (Tùy chọn)
+                        </h5>
+
+                        <div class="card border-0 shadow-sm rounded-3 mb-4 bg-light">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-secondary">
+                                        <tr>
+                                            <th class="ps-3">Tên Dịch Vụ</th>
+                                            <th class="text-center">Đơn Giá</th>
+                                            <th class="text-center" style="width: 140px;">Số Lượng</th>
+                                            <th class="text-end pe-3">Thành Tiền</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.DanhSachDichVu != null && Model.DanhSachDichVu.Any())
+                                        {
+                                            for (int i = 0; i < Model.DanhSachDichVu.Count; i++)
+                                            {
+                                                <tr>
+                                                    <td class="ps-3 fw-semibold">
+                                                        <input type="hidden" asp-for="DanhSachDichVu[i].MaDichVu" />
+                                                        <input type="hidden" asp-for="DanhSachDichVu[i].TenDichVu" />
+                                                        <input type="hidden" asp-for="DanhSachDichVu[i].DonGia" class="dongia-dv" />
+                                                        <i class="bi bi-box-seam text-primary me-2"></i>@Model.DanhSachDichVu[i].TenDichVu
+                                                    </td>
+                                                    <td class="text-center text-secondary">
+                                                        @Model.DanhSachDichVu[i].DonGia.ToString("N0") đ
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <input type="number" asp-for="DanhSachDichVu[i].SoLuong" min="0" max="50" class="form-control form-control-sm text-center input-soluong" />
+                                                    </td>
+                                                    <td class="text-end pe-3 fw-bold text-danger span-thanhtien">
+                                                        0 đ
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="4" class="text-center py-3 text-muted">Hiện chưa có dịch vụ đi kèm.</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 3. CHI PHÍ & ĐẶT CỌC -->
+                        <h5 class="fw-bold text-dark border-bottom pb-2 mb-3"><i class="bi bi-cash-stack me-2 text-primary"></i>3. Chi Phí & Đặt Cọc</h5>
+
+                        <!-- BẢNG TÍNH TIỀN TỰ ĐỘNG -->
+                        <div class="bg-light p-4 rounded-3 mb-4 border">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <label asp-for="TienCoc" class="form-label fw-semibold">Tiền đặt cọc trước (VNĐ) <span class="text-danger">*</span></label>
+                                    <input asp-for="TienCoc" type="number" class="form-control form-control-lg" />
+                                    <span asp-validation-for="TienCoc" class="text-danger small"></span>
+                                    <small class="text-muted d-block mt-1">Giao dịch đặt cọc quy định tối thiểu 100.000 VNĐ</small>
+                                </div>
+
+                                <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                                    <div class="small text-muted mb-1">
+                                        <span>Tiền thuê sân: <strong id="lblTienSan">0 đ</strong></span> | 
+                                        <span>Tiền dịch vụ: <strong id="lblTienDichVu">0 đ</strong></span>
+                                    </div>
+                                    <span class="text-muted d-block small fw-bold">TỔNG TỔNG TIỀN DỰ KIẾN:</span>
+                                    <span id="lblTongTien" class="fs-2 fw-bold text-danger">0 VNĐ</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="GhiChu" class="form-label fw-semibold">Ghi chú cho Quản lý sân (Nếu có)</label>
+                            <textarea asp-for="GhiChu" class="form-control" rows="2" placeholder="Ví dụ: Chuẩn bị thêm trà đá, xin mượn bóng đá..."></textarea>
+                        </div>
+
+                        <!-- NÚT THAO TÁC -->
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                            <a asp-controller="SanTheThao" asp-action="Index" class="btn btn-outline-secondary btn-lg px-4"><i class="bi bi-arrow-left me-1"></i> Quay lại</a>
+                            <button type="submit" class="btn btn-success btn-lg fw-bold px-5"><i class="bi bi-check-circle-fill me-2"></i> Xác Nhận Đặt Sân</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- POPUP MODAL THÔNG BÁO LỖI NỔI LÊN (BẮT BUỘC TIẾNG VIỆT, BẤM OK THÌ ĐÓNG) -->
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="modal fade" id="modalThongBaoLoi" tabindex="-1" aria-labelledby="modalThongBaoLoiLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header bg-danger text-white py-3">
+                    <h5 class="modal-title fw-bold" id="modalThongBaoLoiLabel">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>Thông Báo Lỗi Đặt Sân
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 text-dark fs-6">
+                    <p class="fw-bold text-danger mb-2">Không thể tạo đơn đặt sân do các nguyên nhân sau:</p>
+                    <ul class="mb-0 text-dark ps-3">
+                        @foreach (var modelState in ViewData.ModelState.Values)
+                        {
+                            foreach (var error in modelState.Errors)
+                            {
+                                <li class="mb-2 text-danger fw-semibold">@error.ErrorMessage</li>
+                            }
+                        }
+                    </ul>
+                </div>
+                <div class="modal-footer bg-light border-0 py-2 d-flex justify-content-center">
+                    <button type="button" class="btn btn-danger fw-bold px-4 py-2" data-bs-dismiss="modal"><i class="bi bi-check-lg me-1"></i> Đồng ý (OK)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        const donGiaSan = @Model.DonGiaTheoGio;
+        const inputBatDau = document.getElementById('gioBatDau');
+        const inputKetThuc = document.getElementById('gioKetThuc');
+        const lblTienSan = document.getElementById('lblTienSan');
+        const lblTienDichVu = document.getElementById('lblTienDichVu');
+        const lblTongTien = document.getElementById('lblTongTien');
+
+        const inputSoLuongs = document.querySelectorAll('.input-soluong');
+        const inputDonGias = document.querySelectorAll('.dongia-dv');
+        const spanThanhTiens = document.querySelectorAll('.span-thanhtien');
+
+        function tinhTongTien() {
+            let tienSan = 0;
+            if (inputBatDau.value && inputKetThuc.value) {
+                const t1 = inputBatDau.value.split(':');
+                const t2 = inputKetThuc.value.split(':');
+                const h1 = parseFloat(t1[0]) + parseFloat(t1[1])/60;
+                const h2 = parseFloat(t2[0]) + parseFloat(t2[1])/60;
+                const soGio = h2 - h1;
+                if (soGio > 0) {
+                    tienSan = soGio * donGiaSan;
+                }
+            }
+            lblTienSan.innerText = tienSan.toLocaleString('vi-VN') + ' đ';
+
+            let tienDichVu = 0;
+            inputSoLuongs.forEach((input, index) => {
+                const sl = parseInt(input.value) || 0;
+                const dg = parseFloat(inputDonGias[index].value) || 0;
+                const thanhTien = sl * dg;
+                tienDichVu += thanhTien;
+                spanThanhTiens[index].innerText = thanhTien.toLocaleString('vi-VN') + ' đ';
+            });
+
+            lblTienDichVu.innerText = tienDichVu.toLocaleString('vi-VN') + ' đ';
+
+            const tongCong = tienSan + tienDichVu;
+            lblTongTien.innerText = tongCong.toLocaleString('vi-VN') + ' VNĐ';
+        }
+
+        inputBatDau.addEventListener('change', tinhTongTien);
+        inputKetThuc.addEventListener('change', tinhTongTien);
+        inputSoLuongs.forEach(input => input.addEventListener('input', tinhTongTien));
+
+        tinhTongTien();
+
+        // TỰ ĐỘNG BẬT POPUP THÔNG BÁO LỖI BẰNG TIẾNG VIỆT KHI CÓ LỖI (BẤM OK ĐỂ ĐÓNG)
+        var modalLoiElement = document.getElementById('modalThongBaoLoi');
+        if (modalLoiElement) {
+            var modalLoi = new bootstrap.Modal(modalLoiElement);
+            modalLoi.show();
+        }
+    </script>
+}

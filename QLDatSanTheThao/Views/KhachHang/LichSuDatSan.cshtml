@@ -1,0 +1,126 @@
+@* 
+    Họ và tên: [Điền tên SV 3]
+    Mã sinh viên: [Điền mã SV 3]
+    Nội dung thực hiện: View LichSuDatSan - Theo dõi lịch sử đặt sân của cá nhân Khách Hàng (Module 3)
+*@
+
+@model IEnumerable<QLDatSanTheThao.Models.Entities.DatSan>
+
+@{
+    ViewData["Title"] = "Lịch Sử Đặt Sân Của Tôi";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-primary mb-1"><i class="bi bi-clock-history me-2"></i>Lịch Sử Đặt Sân Của Tôi</h2>
+            <p class="text-muted mb-0">Theo dõi trạng thái các đơn đặt sân bạn đã đăng ký</p>
+        </div>
+        <a asp-controller="SanTheThao" asp-action="Index" class="btn btn-primary fw-bold"><i class="bi bi-plus-circle me-1"></i> Đặt Sân Mới</a>
+    </div>
+
+    <!-- KHỐI THÔNG BÁO -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- BẢNG LỊCH SỬ ĐẶT SÂN -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="ps-3">Mã Đơn</th>
+                        <th>Tên Sân</th>
+                        <th>Loại Sân</th>
+                        <th>Thời Gian Đặt Sân</th>
+                        <th>Tổng Tiền</th>
+                        <th>Tiền Cọc</th>
+                        <th>Trạng Thái</th>
+                        <th class="text-center pe-3">Thao Tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center py-5 text-muted">
+                                <i class="bi bi-calendar-x fs-1 d-block mb-2 text-secondary"></i>
+                                Bạn chưa có đơn đặt sân nào. Hãy chọn sân và đặt ngay nhé!
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="ps-3 fw-bold">#@item.MaDatSan</td>
+                                <td>
+                                    <span class="fw-bold text-dark d-block">@item.SanTheThao.TenSan</span>
+                                    <small class="text-muted"><i class="bi bi-geo-alt me-1"></i>@item.SanTheThao.DiaChi</small>
+                                </td>
+                                <td><span class="badge bg-info text-dark">@item.SanTheThao.LoaiSan.TenLoai</span></td>
+                                <td>
+                                    <span class="fw-semibold text-primary d-block">
+                                        <i class="bi bi-calendar3 me-1"></i>@item.GioBatDau.ToString("dd/MM/yyyy")
+                                    </span>
+                                    <small class="text-dark">
+                                        <i class="bi bi-clock me-1"></i>@item.GioBatDau.ToString("HH:mm") - @item.GioKetThuc.ToString("HH:mm")
+                                    </small>
+                                </td>
+                                <td class="fw-bold text-danger">@item.DonGia.ToString("N0") đ</td>
+                                <td class="fw-bold text-success">@item.TienCoc.ToString("N0") đ</td>
+                                <td>
+                                    @switch (item.TrangThai)
+                                    {
+                                        case "Chờ xử lý":
+                                            <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i>Chờ xử lý</span>
+                                            break;
+                                        case "Đang xử lý":
+                                        case "Đã xác nhận":
+                                            <span class="badge bg-primary"><i class="bi bi-gear-wide-connected me-1"></i>@item.TrangThai</span>
+                                            break;
+                                        case "Hoàn thành":
+                                            <span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i>Hoàn thành</span>
+                                            break;
+                                        case "Đã hủy":
+                                            <span class="badge bg-secondary"><i class="bi bi-x-circle-fill me-1"></i>Đã hủy</span>
+                                            break;
+                                        default:
+                                            <span class="badge bg-secondary">@item.TrangThai</span>
+                                            break;
+                                    }
+                                </td>
+                                <td class="text-center pe-3">
+                                    @if (item.TrangThai == "Chờ xử lý")
+                                    {
+                                        <form asp-action="HuyDatSan" asp-route-id="@item.MaDatSan" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn đặt sân này không?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-outline-danger btn-sm fw-semibold"><i class="bi bi-trash me-1"></i> Hủy Đơn</button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small">Khóa thao tác</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

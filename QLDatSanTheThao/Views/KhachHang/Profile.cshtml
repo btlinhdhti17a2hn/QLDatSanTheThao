@@ -1,0 +1,104 @@
+@* 
+    Họ và tên: [Điền tên SV 3]
+    Mã sinh viên: [Điền mã SV 3]
+    Nội dung thực hiện: View Profile - Cập nhật thông tin hồ sơ cá nhân Khách Hàng (Module 3)
+*@
+
+@model QLDatSanTheThao.Models.Entities.KhachHang
+
+@{
+    ViewData["Title"] = "Hồ Sơ Cá Nhân";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow rounded-4 overflow-hidden">
+                <div class="bg-primary bg-gradient text-white p-4">
+                    <h3 class="fw-bold mb-1"><i class="bi bi-person-bounding-box me-2"></i>Hồ Sơ Cá Nhân</h3>
+                    <p class="mb-0 text-white-50">Cập nhật thông tin tài khoản và thông tin liên hệ của bạn</p>
+                </div>
+                <div class="card-body p-4">
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle-fill me-2"></i>@TempData["Success"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["Error"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <form asp-action="Profile" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="MaKhachHang" />
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="HoTen" class="form-label fw-semibold">Họ và tên <span class="text-danger">*</span></label>
+                                <input asp-for="HoTen" class="form-control" placeholder="Nguyễn Văn A" />
+                                <span asp-validation-for="HoTen" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="SoDienThoai" class="form-label fw-semibold">Số điện thoại <span class="text-danger">*</span></label>
+                                <input asp-for="SoDienThoai" class="form-control" placeholder="0987654321" />
+                                <span asp-validation-for="SoDienThoai" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Email" class="form-label fw-semibold">Địa chỉ Email</label>
+                                <input asp-for="Email" type="email" class="form-control" placeholder="example@gmail.com" />
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label asp-for="NgaySinh" class="form-label fw-semibold">Ngày sinh</label>
+                                <input asp-for="NgaySinh" type="date" class="form-control" />
+                            </div>
+
+                            <div class="col-md-3">
+                                <label asp-for="GioiTinh" class="form-label fw-semibold">Giới tính</label>
+                                <select asp-for="GioiTinh" class="form-select">
+                                    <option value="Nam">Nam</option>
+                                    <option value="Nữ">Nữ</option>
+                                    <option value="Khác">Khác</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12">
+                                <label asp-for="DiaChi" class="form-label fw-semibold">Địa chỉ liên hệ</label>
+                                <input asp-for="DiaChi" class="form-control" placeholder="Số nhà, Tên đường, Quận/Huyện, TP..." />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold text-muted">Ngày đăng ký</label>
+                                <input type="text" class="form-control bg-light" value="@Model.NgayDangKy.ToString("dd/MM/yyyy HH:mm")" readonly />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold text-muted">Điểm tích lũy</label>
+                                <input type="text" class="form-control bg-light text-success fw-bold" value="@Model.DiemTichLuy điểm" readonly />
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                            <a asp-action="LichSuDatSan" class="btn btn-outline-secondary"><i class="bi bi-clock-history me-1"></i> Xem Lịch Sử Đặt Sân</a>
+                            <button type="submit" class="btn btn-primary fw-bold px-4"><i class="bi bi-save me-1"></i> Lưu Thay Đổi</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
