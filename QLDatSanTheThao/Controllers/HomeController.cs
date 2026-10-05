@@ -11,6 +11,7 @@ namespace QLDatSanTheThao.Controllers
             HttpContext.Session.SetString("VaiTro", "Admin");
             return RedirectToAction("Index", "DichVu");
         }
+       
         public IActionResult Index()
         {
             return View();
