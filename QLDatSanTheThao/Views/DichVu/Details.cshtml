@@ -1,4 +1,6 @@
-@* Họ và tên: Tạ Đình Kim   Mã sinh viên: 23103100315   Nội dung thực hiện: Chi tiết dịch vụ. *@
+@* Họ và tên: Tạ Đình Kim 
+   Mã sinh viên: 23103100315   
+   Nội dung thực hiện: Chi tiết dịch vụ. *@
 @model QLDatSanTheThao.Models.Entities.DichVu
 @{
     ViewData["Title"] = "Chi tiết dịch vụ";
@@ -27,13 +29,13 @@
     <div class="row justify-content-center">
         <div class="col-lg-7">
             <div class="card border shadow-sm rounded-4 overflow-hidden">
-                <!-- Header của Card hiển thị tên dịch vụ và mã -->
+                <!-- Header của Card chỉ hiển thị tên dịch vụ -->
                 <div class="card-header bg-light border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
                     <h5 class="fw-bold text-dark mb-0">@Model.TenDichVu</h5>
-                    <span class="badge bg-secondary text-white px-2.5 py-1.5 rounded-pill">Mã: #@Model.MaDichVu</span>
+                    <span class="badge bg-secondary text-white px-2.5 py-1.5 rounded-pill">Mã: #@ViewBag.SoThuTu</span>
                 </div>
 
-                <!-- Thân Card: Chi tiết các thuộc tính với khoảng cách vừa vặn -->
+                <!-- Thân Card -->
                 <div class="card-body p-4">
                     <dl class="row mb-0 gy-3 align-items-center">
                         <dt class="col-sm-4 text-secondary fw-semibold">Tên dịch vụ</dt>
@@ -91,3 +93,4 @@
         </div>
     </div>
 </div>
+

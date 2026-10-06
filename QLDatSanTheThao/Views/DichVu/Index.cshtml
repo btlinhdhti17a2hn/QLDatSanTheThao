@@ -63,8 +63,9 @@
                     }
                     @foreach (var d in Model)
                     {
+                        int soTT = ++stt;
                         <tr>
-                            <td class="ps-4 fw-semibold text-secondary">@(++stt)</td>
+                            <td class="ps-4 fw-semibold text-secondary">@soTT</td>
                             <td>
                                 <span class="fw-bold text-dark">@d.TenDichVu</span>
                             </td>
@@ -118,7 +119,7 @@
                             </td>
                         </tr>
 
-                        <!-- Modal Xem Chi Tiết -->
+                        <!-- Modal Xem Chi Tiết (mã khớp với cột Mã trong bảng) -->
                         <div class="modal fade" id="detailModal-@d.MaDichVu" tabindex="-1" aria-labelledby="detailModalLabel-@d.MaDichVu" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
@@ -133,7 +134,7 @@
                                         </div>
                                         <div class="mb-3 pb-2 border-bottom">
                                             <span class="text-secondary small text-uppercase fw-semibold d-block mb-1">Mã dịch vụ</span>
-                                            <span class="text-dark">#@d.MaDichVu</span>
+                                            <span class="text-dark">#@soTT</span>
                                         </div>
                                         <div class="mb-3 pb-2 border-bottom">
                                             <span class="text-secondary small text-uppercase fw-semibold d-block mb-1">Đơn giá</span>
@@ -176,7 +177,7 @@
                                             <h5 class="modal-title fw-bold text-dark" id="editModalLabel-@d.MaDichVu">Chỉnh sửa dịch vụ</h5>
                                             <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
-                                        <form asp-action="Edit" method="post">
+                                        <form asp-action="Edit" asp-route-id="@d.MaDichVu" method="post">
                                             <div class="modal-body p-4 text-start">
                                                 <input type="hidden" name="MaDichVu" value="@d.MaDichVu" />
 
